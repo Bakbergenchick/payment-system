@@ -4,6 +4,9 @@ package com.silkpay.accountservice.service.impl;
 import com.silkpay.accountservice.client.PaymentClient;
 import com.silkpay.accountservice.entity.Account;
 import com.silkpay.accountservice.entity.PaymentCard;
+import com.silkpay.accountservice.exception.AccountNotFoundException;
+import com.silkpay.accountservice.exception.CardProcessException;
+import com.silkpay.accountservice.exception.CheckBalanceException;
 import com.silkpay.accountservice.payload.FullResponse;
 import com.silkpay.accountservice.repository.AccountRepository;
 import com.silkpay.accountservice.service.AccountService;
@@ -25,7 +28,7 @@ public class AccountServiceImpl implements AccountService, PaymentService {
     @Override
     public FullResponse getCardsByAccountId(Long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found"));
+                .orElseThrow(() -> new AccountNotFoundException("Account with id=" + id + " is not found!"));
 
         List<PaymentCard> cardsByAccount = paymentClient.findAllCardsByAccount(id);
 
@@ -51,7 +54,9 @@ public class AccountServiceImpl implements AccountService, PaymentService {
 
     @Override
     public Account getAccountById(Long id) {
-        return accountRepository.findById(id).get();
+
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException("Account with id=" + id + " is not found!"));
     }
 
     @Override
@@ -64,7 +69,7 @@ public class AccountServiceImpl implements AccountService, PaymentService {
         PaymentCard card = paymentClient.findCardById(cardId);
 
         if (!card.getAccId().equals(acc)){
-            throw new IllegalArgumentException("Sefsef");
+            throw new AccountNotFoundException("Accounts don't match to each other");
         }
 
         card.setBalance(card.getBalance() + balance);
@@ -76,7 +81,7 @@ public class AccountServiceImpl implements AccountService, PaymentService {
         PaymentCard card = paymentClient.findCardById(cardId);
 
         if (!card.getAccId().equals(acc)){
-            throw new IllegalArgumentException("Sefsef");
+            throw new AccountNotFoundException("Accounts don't match to each other");
         }
 
         card.setBalance(card.getBalance() - balance);
@@ -90,20 +95,20 @@ public class AccountServiceImpl implements AccountService, PaymentService {
         PaymentCard paymentCardTo = paymentClient.findCardById(cardTo);
 
         if (!paymentCardFrom.getAccId().equals(accFrom)){
-            throw new IllegalArgumentException("Sefsef");
+            throw new AccountNotFoundException("Accounts don't match to each other");
         }
 
         if (!paymentCardTo.getAccId().equals(accTo)){
-            throw new IllegalArgumentException("Sefsef");
+            throw new AccountNotFoundException("Accounts don't match to each other");
         }
 
         if (accFrom.equals(accTo)){
             if (cardFrom.equals(cardTo))
-                throw new IllegalArgumentException("Within two identical accounts and cards don't support transfer");
+                throw new CardProcessException("Within two identical accounts and cards don't support transfer");
         }
 
         if (paymentCardFrom.getBalance().compareTo(balance) < 0){
-            throw new IllegalArgumentException("In card don't have enough money to transfer");
+            throw new CheckBalanceException("In card don't have enough money to transfer");
         }
 
         paymentCardFrom.setBalance(paymentCardFrom.getBalance() - balance);
@@ -117,7 +122,7 @@ public class AccountServiceImpl implements AccountService, PaymentService {
         PaymentCard card = paymentClient.findCardById(cardId);
 
         if (!card.getAccId().equals(acc)){
-            throw new IllegalArgumentException("Sefsef");
+            throw new AccountNotFoundException("Accounts don't match to each other");
         }
 
         return card;

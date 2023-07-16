@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentCardController {
     private final PaymentCardService cardService;
 
-    // Payment Card endpoints
+    //************** Payment Card endpoints ******************//
+
     @PostMapping
     public ResponseEntity<?> addCard(@RequestBody PaymentCard card){
         PaymentCard paymentCard = cardService.createPaymentCard(card);

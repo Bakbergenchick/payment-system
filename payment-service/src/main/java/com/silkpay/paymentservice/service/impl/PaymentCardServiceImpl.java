@@ -1,6 +1,7 @@
 package com.silkpay.paymentservice.service.impl;
 
 import com.silkpay.paymentservice.entity.PaymentCard;
+import com.silkpay.paymentservice.exception.CardNotFoundException;
 import com.silkpay.paymentservice.repository.PaymentCardRepository;
 import com.silkpay.paymentservice.service.PaymentCardService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     @Override
     public PaymentCard getCardById(Long id) {
         return paymentCardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("sefef"));
+                .orElseThrow(() -> new CardNotFoundException("Card with id=" + id + " not found!"));
     }
 
     @Override
