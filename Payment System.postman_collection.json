@@ -174,14 +174,6 @@
 					"response": []
 				},
 				{
-					"name": "deposit money",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				},
-				{
 					"name": "get card by id",
 					"request": {
 						"method": "GET",
